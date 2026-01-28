@@ -56,3 +56,22 @@ python main.py
    - Enter an S3 bucket (and optional prefix/profile/region).
    - Click **Save Configuration**.
    - Click **Test S3 Connection** to verify that the bucket is reachable.
+   - ## Milestone 2 (Week 4) – Literature + Competitors + Features
+
+### Literature review work completed
+- Reviewed existing literature and technical sources related to file synchronization, conflict resolution, and cloud storage workflows.
+- Captured key takeaways that will guide CloudSync Manager design decisions and evaluation.
+
+### Competing products selected for comparison
+- AWS CLI: aws s3 sync (baseline sync behavior and options)
+- Cyberduck / Mountain Duck (GUI workflow comparison)
+- S3 Browser (Windows GUI S3 management comparison)
+- Syncovery (sync automation and feature comparison)
+
+### CloudSync Manager feature set (current scope)
+- Desktop GUI to configure local folder, S3 bucket/prefix, AWS profile, and region
+- Local SQLite metadata tracking for sync state
+- Automated sync logic for new/changed files
+- Conflict detection and resolution approach
+- Logging/progress feedback for transparency
+
