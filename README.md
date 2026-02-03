@@ -1,7 +1,6 @@
-# CloudSync Manager – Milestone 1 Starter
+# CloudSync Manager – Milestone 3 Build
 
-This folder contains a minimal, working Milestone 1 prototype for your Capstone project.
-
+“This repository contains the Milestone 3 build package and supporting source files for CloudSync Manager.”
 ## What this build does
 
 - Opens a PyQt desktop window.
@@ -56,7 +55,7 @@ python main.py
    - Enter an S3 bucket (and optional prefix/profile/region).
    - Click **Save Configuration**.
    - Click **Test S3 Connection** to verify that the bucket is reachable.
-   - ## Milestone 2 (Week 4) – Literature + Competitors + Features
+   - ## Milestone 3: update README title – Literature + Competitors + Features
 
 ### Literature review work completed
 - Reviewed existing literature and technical sources related to file synchronization, conflict resolution, and cloud storage workflows.
