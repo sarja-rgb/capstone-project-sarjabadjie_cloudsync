@@ -13,7 +13,7 @@ This repository contains the Milestone 6 build package and supporting source fil
 
 **Build Version:** `CloudSyncManager_M6`  
 **Version Control Link:** [GitHub Repository](https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync)  
-**Build File Link:** [CloudSync Manager Build Repository Location](https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync)
+**Build File Link:** [Direct Download ZIP](https://raw.githubusercontent.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/main/CloudSyncManager_M6.zip)
 
 ## Notes
 
