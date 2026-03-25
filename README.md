@@ -18,4 +18,3 @@ This repository contains the Milestone 6 build package and supporting source fil
 ## Notes
 
 This Milestone 6 submission reflects the latest progress completed for the current development cycle and aligns with the ongoing implementation goals defined in the project plan.
-https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/README.md
