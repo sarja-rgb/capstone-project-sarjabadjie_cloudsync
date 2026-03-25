@@ -1,6 +1,6 @@
-# CloudSync Insight – Milestone 6 Build
+# CloudSync Manager – Milestone 6 Build
 
-This repository contains the Milestone 6 build package and supporting source files for CloudSync Insight.
+This repository contains the Milestone 6 build package and supporting source files for CloudSync Manager.
 
 ## Milestone 6 focus
 
