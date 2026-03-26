@@ -1,9 +1,4 @@
-Title (feature/problem-based)
-Author + Date
-Feature narrative (few sentences to a paragraph)
-2–3 visuals with captions
-Retrospective (right/wrong/improve)
-Navigation (links to entries)
+
 
 # CloudSync Manager: Milestone 6 Build Packaging + Sync Workflow Progress
 **Author:** Sarja Badjie  
