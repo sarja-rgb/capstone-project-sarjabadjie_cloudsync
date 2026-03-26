@@ -1,0 +1,11 @@
+# Runtime / local artifacts (do not commit)
+sync_log.txt
+cloudsync_metadata.db
+*.db
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Builds / extracted zip folders
+CloudSyncManager_M6/
