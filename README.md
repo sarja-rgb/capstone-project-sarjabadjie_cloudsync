@@ -18,6 +18,7 @@ This repository contains the Milestone 6 build package and supporting source fil
 ## Notes
 
 This Milestone 6 submission reflects the latest progress completed for the current development cycle and aligns with the ongoing implementation goals defined in the project plan.
-![Fig. 1 – Trello sprint board](portfolio_images/fig1_trello.png)
+**Fig. 1 – Trello sprint board**
+![Fig. 1 – Trello sprint board](portfolio_images/Screenshot%202026-03-25%20011255.png)
 ## Portfolio Posts (Journal Archive)
 - **March 2026:** [CloudSync Manager – Milestone 6 Portfolio Post](PORTFOLIO_MAR_2026.md)
