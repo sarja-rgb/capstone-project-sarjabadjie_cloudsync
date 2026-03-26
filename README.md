@@ -22,5 +22,6 @@ This Milestone 6 submission reflects the latest progress completed for the curre
 ![Fig. 2 – Sync log commit](portfolio_images/fig2_sync_log_commit.png)
 ![Fig. 3 – README build info](portfolio_images/fig3_readme_build.png)
 ![Fig. 3 – README build info](portfolio_images/fig3_readme_build.png)
+![Fig. 3 – README build info](portfolio_images/fig3_readme_build.png)
 ## Portfolio Posts (Journal Archive)
 - **March 2026:** [CloudSync Manager – Milestone 6 Portfolio Post](PORTFOLIO_MAR_2026.md)
