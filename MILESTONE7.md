@@ -1,4 +1,4 @@
-# CloudSync Manager â€” Milestone 7 Build
+# CloudSync Manager Milestone 7 Build
 
 This repository contains the **Milestone 7** build package and supporting source files for **CloudSync Manager**.
 
@@ -44,10 +44,9 @@ https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/MI
 
 ## Evidence Screenshots (Milestone 7)
 
-### README (Milestone 7 Build)
-![README showing Milestone 7 Build](portfolio_images/m7_readme.png)
+### Evidence Screenshot 1
+![Milestone 7 evidence screenshot 1](portfolio_images/fig1_trello.png)
 
-### GitHub Commit (Milestone 7 UI Demo)
-![Commit showing Milestone 7 UI demo](portfolio_images/m7_commit_ui.png)
-
+### Evidence Screenshot 2
+![Milestone 7 evidence screenshot 2](portfolio_images/fig2_sync_log_commit.png)
 ---
