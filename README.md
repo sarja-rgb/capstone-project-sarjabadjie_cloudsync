@@ -43,8 +43,4 @@ https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/MI
 
 ---
 
-## How to Run
 
-1) Install dependencies:
-```bash
-python -m pip install -r requirements.txt
