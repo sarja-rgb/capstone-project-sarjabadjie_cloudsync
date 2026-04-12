@@ -1,25 +1,50 @@
-# CloudSync Manager – Milestone 7 Build
+# CloudSync Manager — Milestone 7 Build
 
-This repository contains the Milestone 7 build package and supporting source files for CloudSync Manager.
+This repository contains the **Milestone 7** build package and supporting source files for **CloudSync Manager**.
 
-## Milestone 7 focus
+---
 
-- Continued development of the CloudSync Manager application
-- Updated project build and supporting source files
-- Maintained GitHub version control for the latest milestone submission
-- Prepared the current build for advisor review and milestone evaluation
+## Milestone 7 focus (Week 1)
+
+This Milestone 7 build demonstrates functional progress toward the CloudSync Manager project goals:
+
+- Working desktop GUI workflow for configuration and demonstration
+- SQLite configuration persistence (loads last saved configuration on launch)
+- AWS S3 connectivity test via **“Test S3 Connection”**
+- Milestone 7 demo UI (**milestone7_ui.py**) showing progress/status and completion state
+
+---
 
 ## Build Information
 
-**Build Version:** `CloudSyncManager_M7`  
-**Version Control Link:** [GitHub Repository](https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync)  
-**Build File Link:** [Direct Download ZIP](https://raw.githubusercontent.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/main/CloudSyncManager_M7.zip)
+- **Build Version:** `CloudSyncManager_M7`
+- **Branch:** `main`
+- **GitHub Repository:**  
+  https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync
 
-## Notes
+### Direct Build Links
 
-This Milestone 7 submission reflects the latest progress completed for the current development cycle and aligns with the ongoing implementation goals defined in the project plan.
-![Fig. 1 – Trello sprint board](portfolio_images/fig1_trello.png)
-![Fig. 2 – Sync log commit](portfolio_images/fig2_sync_log_commit.png)
-(portfolio_images/fig3_readme_build.png)
-## Portfolio Posts (Journal Archive)
-- **April 2026:** [CloudSync Manager – Milestone 7 Portfolio Post](PORTFOLIO_April_2026.md)
+**GitHub Release (Milestone 7):**  
+https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/releases/tag/v0.7-m7
+
+**Direct Download (Release Asset):**  
+https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/releases/download/v0.7-m7/CloudSyncManager_M7.zip
+
+**Build ZIP in Repo (Code tab):**  
+https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/CloudSyncManager_M7.zip  
+*(Tip: click “View raw” to download.)*
+
+---
+
+## Milestone Notes (Markdown)
+
+Milestone 7 notes and run instructions:  
+https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/MILESTONE7.md
+
+---
+
+## How to Run
+
+1) Install dependencies:
+```bash
+python -m pip install -r requirements.txt
