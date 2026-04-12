@@ -42,11 +42,3 @@ Milestone 7 notes and run instructions:
 https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/MILESTONE7.md
 
 ---
-
-## Evidence Screenshots (Milestone 7)
-
-### README (Milestone 7 Build)
-![README showing Milestone 7 Build](portfolio_images/m7_readme.png)
-
-### GitHub Commit (Milestone 7 UI Demo)
-![Commit showing Milestone 7 UI demo](portfolio_images/m7_commit_ui.png)
