@@ -41,12 +41,10 @@ https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/Cl
 Milestone 7 notes and run instructions:  
 https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/MILESTONE7.md
 ---
-
 ## Evidence Screenshots (Milestone 7)
 
-### Evidence Screenshot 1
-![Milestone 7 evidence screenshot 1](portfolio_images/fig1_trello.png)
+### README (Milestone 7 Build)
+![README showing Milestone 7 Build](portfolio_images/m7_readme.png)
 
-### Evidence Screenshot 2
-![Milestone 7 evidence screenshot 2](portfolio_images/fig2_sync_log_commit.png)
----
+### GitHub Commit (Milestone 7 UI Demo)
+![Commit showing Milestone 7 UI demo](portfolio_images/m7_commit.png)
