@@ -52,7 +52,4 @@ This build includes:
 5. Click **Test S3 Access**.
 6. Run the local scan / sync prototype workflow in the GUI.
 
-## Screencast
-- **Screencast:** `[Paste screencast link here]`
-
 The screencast demonstrates the Milestone 8 build running, highlights the current GUI workflow, shows configuration saving, AWS S3 access testing, local scan / sync prototype progress, and briefly explains the technical work completed and next steps.
