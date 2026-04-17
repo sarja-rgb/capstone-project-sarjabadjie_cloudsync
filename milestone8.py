@@ -12,13 +12,17 @@ import os
 from pathlib import Path
 from typing import List
 
-# NOTE: Adjust import name if your repo uses a different module/class name.
-# If s3_client.py contains a class like S3Client, this will work.
-try:
-    from s3_client import S3Client  # type: ignore
-except Exception:
-    S3Client = None  # fallback
+from s3_client import build_s3_client, list_objects_simple
 
+# NOTE: Adjust import name if your repo uses a different module/class name.
+client = build_s3_client(profile_name=profile or None, region_name=region or None)
+keys = list_objects_simple(client, bucket=bucket, prefix=prefix or None)
+
+print(f"[S3 Test] Objects returned: {len(keys)}")
+for k in keys[:10]:
+    print(f"  - {k}")
+if len(keys) > 10:
+    print("  ...")
 
 def scan_local_folder(folder: str) -> List[str]:
     """Return a simple list of relative file paths for demo purposes."""
@@ -58,10 +62,14 @@ def main() -> None:
         print("[S3 Test] Skipped (set CLOUDSYNC_S3_BUCKET env var).")
         return
 
-    if S3Client is None:
-        print("[S3 Test] ERROR: Could not import S3Client from s3_client.py")
-        print("        Fix: open s3_client.py and confirm the class/function name.")
-        return
+    client = build_s3_client(profile_name=profile or None, region_name=region or None)
+keys = list_objects_simple(client, bucket=bucket, prefix=prefix or None)
+
+print(f"[S3 Test] Objects returned: {len(keys)}")
+for k in keys[:10]:
+    print(f"  - {k}")
+if len(keys) > 10:
+    print("  ...")
 
     print(f"[S3 Test] Bucket: {bucket}")
     print(f"[S3 Test] Prefix: {prefix or '(none)'}")
