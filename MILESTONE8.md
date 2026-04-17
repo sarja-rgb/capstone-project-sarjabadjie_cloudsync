@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # Milestone 8 Submission – CloudSync Insight
 
 For Milestone 8, I am submitting the latest functional build of my capstone project, **CloudSync Insight**. This milestone reflects continued development progress aligned with my **High-Level Design Document (HLDD)** scope and ongoing advisor guidance. The current build demonstrates meaningful functional progress toward the core Week 2 roadmap goals by extending the existing GUI and AWS S3 connectivity workflow into a more functional sync prototype.
@@ -53,3 +54,11 @@ This build includes:
 6. Run the local scan / sync prototype workflow in the GUI.
 
 The screencast demonstrates the Milestone 8 build running, highlights the current GUI workflow, shows configuration saving, AWS S3 access testing, local scan / sync prototype progress, and briefly explains the technical work completed and next steps.
+=======
+git add MILESTONE8.md
+
+git commit -m "Milestone 8: add milestone details and evidence links"
+
+git push origin main
+
+>>>>>>> Stashed changes
