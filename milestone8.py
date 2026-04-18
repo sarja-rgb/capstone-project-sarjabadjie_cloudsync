@@ -12,9 +12,7 @@ import os
 from pathlib import Path
 from typing import List
 
-from s3_client import build_s3_client, list_objects_simple
-
-# NOTE: Adjust import name if your repo uses a different module/class name.
+client = build_s3_client(profile_name=profile or None, region_name=region or None)# NOTE: Adjust import name if your repo uses a different module/class name.
 client = build_s3_client(profile_name=profile or None, region_name=region or None)
 keys = list_objects_simple(client, bucket=bucket, prefix=prefix or None)
 
