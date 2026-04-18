@@ -2,8 +2,9 @@
 milestone8.py - CloudSync Manager / CloudSync Insight
 Milestone 8: S3 adapter + local scan + one-way sync prototype (demo entry point)
 
-This script is a lightweight, CLI demo runner for Milestone 8 so the milestone
-has an explicit code artifact in the repo.
+This script is a lightweight CLI demo runner for Milestone 8.
+It scans a local folder and performs a safe S3 list operation using the
+existing helpers in s3_client.py (build_s3_client + list_objects_simple).
 """
 
 from __future__ import annotations
@@ -12,15 +13,8 @@ import os
 from pathlib import Path
 from typing import List
 
-client = build_s3_client(profile_name=profile or None, region_name=region or None)# NOTE: Adjust import name if your repo uses a different module/class name.
-client = build_s3_client(profile_name=profile or None, region_name=region or None)
-keys = list_objects_simple(client, bucket=bucket, prefix=prefix or None)
+from s3_client import build_s3_client, list_objects_simple
 
-print(f"[S3 Test] Objects returned: {len(keys)}")
-for k in keys[:10]:
-    print(f"  - {k}")
-if len(keys) > 10:
-    print("  ...")
 
 def scan_local_folder(folder: str) -> List[str]:
     """Return a simple list of relative file paths for demo purposes."""
@@ -28,7 +22,7 @@ def scan_local_folder(folder: str) -> List[str]:
     if not root.exists():
         raise FileNotFoundError(f"Local folder not found: {folder}")
 
-    files = []
+    files: List[str] = []
     for p in root.rglob("*"):
         if p.is_file():
             files.append(str(p.relative_to(root)))
@@ -45,6 +39,7 @@ def main() -> None:
 
     print("=== Milestone 8 Demo Runner ===")
 
+    # Local scan demo
     if local_folder:
         print(f"[Local Scan] Folder: {local_folder}")
         files = scan_local_folder(local_folder)
@@ -56,34 +51,27 @@ def main() -> None:
     else:
         print("[Local Scan] Skipped (set CLOUDSYNC_LOCAL_FOLDER env var to enable).")
 
+    # S3 list demo
     if not bucket:
         print("[S3 Test] Skipped (set CLOUDSYNC_S3_BUCKET env var).")
+        print("=== End Milestone 8 Demo ===")
         return
-
-    client = build_s3_client(profile_name=profile or None, region_name=region or None)
-keys = list_objects_simple(client, bucket=bucket, prefix=prefix or None)
-
-print(f"[S3 Test] Objects returned: {len(keys)}")
-for k in keys[:10]:
-    print(f"  - {k}")
-if len(keys) > 10:
-    print("  ...")
 
     print(f"[S3 Test] Bucket: {bucket}")
     print(f"[S3 Test] Prefix: {prefix or '(none)'}")
     print(f"[S3 Test] AWS_PROFILE: {profile or '(default)'}  AWS_REGION: {region or '(default)'}")
 
-    # This assumes S3Client can be constructed with profile/region, adjust if needed.
-    client = S3Client(profile_name=profile or None, region_name=region or None)  # type: ignore
+    try:
+        client = build_s3_client(profile_name=profile or None, region_name=region or None)
+        keys = list_objects_simple(client, bucket=bucket, prefix=prefix or None)
 
-    # This assumes the client has a list method. Adjust method name if different.
-    results = client.list_objects(bucket=bucket, prefix=prefix or None)  # type: ignore
-
-    print(f"[S3 Test] Objects returned: {len(results)}")
-    for k in results[:10]:
-        print(f"  - {k}")
-    if len(results) > 10:
-        print("  ...")
+        print(f"[S3 Test] Objects returned: {len(keys)}")
+        for k in keys[:10]:
+            print(f"  - {k}")
+        if len(keys) > 10:
+            print("  ...")
+    except Exception as exc:
+        print(f"[S3 Test] ERROR: {exc}")
 
     print("=== End Milestone 8 Demo ===")
 
