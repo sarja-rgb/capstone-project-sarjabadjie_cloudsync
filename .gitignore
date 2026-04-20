@@ -9,3 +9,11 @@ __pycache__/
 
 # Builds / extracted zip folders
 CloudSyncManager_M7/
+
+# Ignore virtual environments and local artifacts
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.db
+*.log
