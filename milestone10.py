@@ -1,24 +1,59 @@
-# Milestone 10
+from pathlib import Path
+import platform
+import sys
 
-## Overview
-For Milestone 10, I focused on continuing the development of CloudSync Manager by organizing the milestone files, verifying the current project structure, and creating a simple verification runner and UI demo for this phase of development.
+REQUIRED_FILES = [
+    "main.py",
+    "requirements.txt",
+    "config_db.py",
+    "s3_client.py",
+    "README.md",
+    "MILESTONE10.md",
+    "milestone10_ui.py",
+]
 
-## Progress Completed
-- Confirmed the project repository is connected and up to date on GitHub.
-- Verified that the Python environment, PyQt5, boto3, and AWS profile are working correctly.
-- Ran the main application successfully.
-- Added `milestone10.py` as a verification runner for this milestone.
-- Added `milestone10_ui.py` as a simple user interface demo for milestone validation.
-- Added this `MILESTONE10.md` file for milestone documentation.
+def main():
+    repo_root = Path(__file__).resolve().parent
 
-## Technical Notes
-The verification script checks for the presence of the main project files and reports the current environment status. The UI script provides a simple PyQt5 interface that can be used during the screencast to demonstrate milestone progress and file validation.
+    print("=== CloudSync Manager - Milestone 10 Verification ===")
+    print(f"Repo root: {repo_root}")
+    print()
 
-## Alignment with HLDD
-This milestone supports the ongoing implementation and verification process described in the High-Level Design Document. It contributes to project stability, documentation quality, and structured milestone delivery.
+    print("[1] Required file check:")
+    missing = []
+    for name in REQUIRED_FILES:
+        p = repo_root / name
+        if p.exists():
+            print(f" - {name}: OK")
+        else:
+            print(f" - {name}: MISSING")
+            missing.append(name)
+    print()
 
-## Next Steps
-- Finalize any additional functionality planned for Milestone 10.
-- Create the `CloudSyncManager_M10.zip` build file.
-- Record the screencast demonstrating the milestone progress.
-- Submit the build link, project management link, screenshot proof, and screencast for grading.
+    print("[2] Build ZIP check:")
+    zip_name = "CloudSyncManager_M10.zip"
+    zip_path = repo_root / zip_name
+    if zip_path.exists():
+        print(f" - {zip_name}: FOUND")
+    else:
+        print(f" - {zip_name}: NOT FOUND")
+    print()
+
+    print("[3] Environment check:")
+    print(f" - Python: {sys.version.split()[0]}")
+    print(f" - Platform: {platform.system()} {platform.release()}")
+    print(f" - Working dir: {Path.cwd()}")
+    print()
+
+    print("[4] Summary:")
+    if not missing:
+        print(" - Milestone 10 verification passed for required files.")
+    else:
+        print(" - Milestone 10 verification incomplete.")
+        print(" - Missing files:", ", ".join(missing))
+
+    print()
+    print("Milestone 10 verification complete.")
+
+if __name__ == "__main__":
+    main()
