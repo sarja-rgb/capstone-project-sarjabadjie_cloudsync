@@ -1,46 +1,29 @@
-# CloudSync Manager — Milestone 7 Build
 
-This repository contains the **Milestone 7** build package and supporting source files for **CloudSync Manager**.
+# CloudSync Manager — Milestone 10 Build
 
----
+This repository contains the Milestone 10 build package and supporting source files for CloudSync Manager.
 
-## Milestone 7 focus (Week 1)
+## Milestone 10 Focus
+This Milestone 10 build demonstrates progress toward the CloudSync Manager project goals:
 
-This Milestone 7 build demonstrates functional progress toward the CloudSync Manager project goals:
+- Project structure verification for milestone delivery
+- Runnable milestone verification script (`milestone10.py`)
+- Simple milestone UI demo (`milestone10_ui.py`)
+- Updated milestone documentation (`MILESTONE10.md`)
+- Build ZIP prepared for evaluation (`CloudSyncManager_M10.zip`)
 
-- Working desktop GUI workflow for configuration and demonstration
-- SQLite configuration persistence (loads last saved configuration on launch)
-- AWS S3 connectivity test via **“Test S3 Connection”**
-- Milestone 7 demo UI (**milestone7_ui.py**) showing progress/status and completion state
+## Included Files
+- `main.py`
+- `config_db.py`
+- `s3_client.py`
+- `requirements.txt`
+- `MILESTONE10.md`
+- `milestone10.py`
+- `milestone10_ui.py`
+- `CloudSyncManager_M10.zip`
 
----
+## How to Run
+Install dependencies:
 
-## Build Information
-
-- **Build Version:** `CloudSyncManager_M7`
-- **Branch:** `main`
-- **GitHub Repository:**  
-  https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync
-
-### Direct Build Links
-
-**GitHub Release (Milestone 7):**  
-https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/releases/tag/v0.7-m7
-
-**Direct Download (Release Asset):**  
-https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/releases/download/v0.7-m7/CloudSyncManager_M7.zip
-
-**Build ZIP in Repo (Code tab):**  
-https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/CloudSyncManager_M7.zip  
-*(Tip: click “View raw” to download.)*
-
----
-
-## Milestone Notes (Markdown)
-
-Milestone 7 notes and run instructions:  
-https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync/blob/main/MILESTONE7.md
-
----
-
-
+```bash
+python -m pip install -r requirements.txt
