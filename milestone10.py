@@ -30,13 +30,17 @@ def main():
             missing.append(name)
     print()
 
-    print("[2] Build ZIP check:")
+    print("[2] Build package check:")
     zip_name = "CloudSyncManager_M10.zip"
     zip_path = repo_root / zip_name
+
     if zip_path.exists():
         print(f" - {zip_name}: FOUND")
+        zip_status = "found"
     else:
-        print(f" - {zip_name}: NOT FOUND")
+        print(f" - {zip_name}: NOT FOUND in this folder")
+        print(" - Note: this is expected when running from an extracted build package.")
+        zip_status = "not_found_extracted_ok"
     print()
 
     print("[3] Environment check:")
@@ -48,6 +52,10 @@ def main():
     print("[4] Summary:")
     if not missing:
         print(" - Milestone 10 verification passed for required files.")
+        if zip_status == "found":
+            print(" - Build ZIP is present in this folder.")
+        else:
+            print(" - Build ZIP is not in this extracted folder, which is acceptable for packaged build testing.")
     else:
         print(" - Milestone 10 verification incomplete.")
         print(" - Missing files:", ", ".join(missing))
