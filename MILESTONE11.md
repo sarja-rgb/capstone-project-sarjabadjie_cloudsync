@@ -1,82 +1,132 @@
-\# Milestone 11 – CloudSync Manager / CloudSync Insight
+from pathlib import Path
+
+import sys
+
+import platform
+
+from datetime import datetime
 
 
 
-\## Milestone Summary
+REQUIRED\_FILES = \[
+
+&#x20;   "main.py",
+
+&#x20;   "requirements.txt",
+
+&#x20;   "README.md",
+
+&#x20;   "MILESTONE11.md",
+
+&#x20;   "SoundSoar.pdf",
+
+&#x20;   "performance\_cpu\_m10\_ui.html",
+
+&#x20;   "performance\_cpu\_main.html",
+
+&#x20;   "milestone11\_ui.py",
+
+]
 
 
 
-Milestone 11 focuses on polishing and verifying the current CloudSync Manager project implementation. This milestone continues the implementation direction discussed with my advisor by strengthening the AI-supported document analysis workflow, preserving testing evidence, and organizing the repository for review.
+ZIP\_FILE = "CloudSyncManager\_M11.zip"
 
 
 
-The current work includes spaCy PDF testing evidence, performance profiling outputs, and updated repository documentation. The goal of this milestone is to show continued development progress, version control activity, and alignment with the High-Level Design Document.
+def check\_file(path: Path) -> str:
+
+&#x20;   return "OK" if path.exists() else "MISSING"
 
 
 
-\## Advisor Alignment
+def main():
+
+&#x20;   root = Path.cwd()
 
 
 
-This milestone supports the advisor recommendation to continue implementation work and test the AI feature direction. The spaCy PDF test supports the planned AI/document intelligence portion of CloudSync Manager by demonstrating text extraction and named entity recognition from a PDF document.
+&#x20;   print("=== CloudSync Manager - Milestone 11 Verification ===")
+
+&#x20;   print(f"Run time: {datetime.now()}")
+
+&#x20;   print(f"Repo root: {root}")
+
+&#x20;   print()
 
 
 
-\## Files Included
+&#x20;   print("\[1] Environment check:")
+
+&#x20;   print(f" - Python: {sys.version.split()\[0]}")
+
+&#x20;   print(f" - Platform: {platform.platform()}")
+
+&#x20;   print(f" - Working dir: {root}")
+
+&#x20;   print()
 
 
 
-\- SoundSoar.pdf
+&#x20;   print("\[2] Required file check:")
 
-\- performance\_cpu\_m10\_ui.html
+&#x20;   missing = \[]
 
-\- performance\_cpu\_main.html
+&#x20;   for file\_name in REQUIRED\_FILES:
 
-\- milestone11.py
+&#x20;       path = root / file\_name
 
-\- milestone11\_ui.py
+&#x20;       status = check\_file(path)
 
-\- MILESTONE11.md
+&#x20;       print(f" - {file\_name}: {status}")
 
-\- README.md
+&#x20;       if status == "MISSING":
 
-\- CloudSyncManager\_M11.zip
-
-
-
-\## Testing / Verification
+&#x20;           missing.append(file\_name)
 
 
 
-The milestone verification script checks that required files exist in the project root and confirms that the Milestone 11 ZIP package is present.
+&#x20;   print()
+
+&#x20;   print("\[3] Build ZIP check:")
+
+&#x20;   zip\_path = root / ZIP\_FILE
+
+&#x20;   if zip\_path.exists():
+
+&#x20;       print(f" - {ZIP\_FILE}: FOUND")
+
+&#x20;   else:
+
+&#x20;       print(f" - {ZIP\_FILE}: MISSING")
+
+&#x20;       missing.append(ZIP\_FILE)
 
 
 
-Run from the project root:
+&#x20;   print()
+
+&#x20;   if missing:
+
+&#x20;       print("RESULT: Some Milestone 11 files are missing.")
+
+&#x20;       print("Missing files:")
+
+&#x20;       for item in missing:
+
+&#x20;           print(f" - {item}")
+
+&#x20;       return 1
 
 
 
-python milestone11.py  
+&#x20;   print("RESULT: PASS - Milestone 11 verification files are present.")
 
-python milestone11\_ui.py
-
-
-
-\## Repository
+&#x20;   return 0
 
 
 
-GitHub Repository:  
+if \_\_name\_\_ == "\_\_main\_\_":
 
-https://github.com/sarja-rgb/capstone-project-sarjabadjie\_cloudsync
-
-
-
-\## Project Management
-
-
-
-Trello Board:  
-
-https://trello.com/b/J6Ouycx9/cloudsync-insight-cos650-sprint-board
+&#x20;   raise SystemExit(main())
 
