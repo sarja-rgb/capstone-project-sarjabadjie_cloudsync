@@ -1,7 +1,7 @@
-cat > milestone11_ui.py <<'EOF'
-import tkinter as tk
-from tkinter import ttk
 from pathlib import Path
+import sys
+import platform
+from datetime import datetime
 
 REQUIRED_FILES = [
     "main.py",
@@ -11,63 +11,56 @@ REQUIRED_FILES = [
     "SoundSoar.pdf",
     "performance_cpu_m10_ui.html",
     "performance_cpu_main.html",
-    "CloudSyncManager_M11.zip",
+    "milestone11_ui.py",
 ]
 
-def build_status_text():
-    root = Path.cwd()
-    lines = []
-    lines.append("CloudSync Manager - Milestone 11 UI Demo")
-    lines.append("=" * 48)
-    lines.append(f"Project Root: {root}")
-    lines.append("")
-    lines.append("Milestone Focus:")
-    lines.append("- AI-supported PDF testing evidence using spaCy")
-    lines.append("- Performance profiling evidence")
-    lines.append("- Repository cleanup and verification package")
-    lines.append("- Advisor-aligned implementation progress")
-    lines.append("")
-    lines.append("File Verification:")
-    for file_name in REQUIRED_FILES:
-        status = "FOUND" if (root / file_name).exists() else "MISSING"
-        lines.append(f"- {file_name}: {status}")
-    lines.append("")
-    lines.append("Repository:")
-    lines.append("https://github.com/sarja-rgb/capstone-project-sarjabadjie_cloudsync")
-    lines.append("")
-    lines.append("Trello:")
-    lines.append("https://trello.com/b/J6Ouycx9/cloudsync-insight-cos650-sprint-board")
-    return "\n".join(lines)
+ZIP_FILE = "CloudSyncManager_M11.zip"
+
+def check_file(path: Path) -> str:
+    return "OK" if path.exists() else "MISSING"
 
 def main():
-    window = tk.Tk()
-    window.title("CloudSync Manager - Milestone 11 Demo")
-    window.geometry("850x600")
+    root = Path.cwd()
 
-    title = ttk.Label(
-        window,
-        text="CloudSync Manager - Milestone 11 Demo",
-        font=("Segoe UI", 16, "bold")
-    )
-    title.pack(pady=12)
+    print("=== CloudSync Manager - Milestone 11 Verification ===")
+    print(f"Run time: {datetime.now()}")
+    print(f"Repo root: {root}")
+    print()
 
-    subtitle = ttk.Label(
-        window,
-        text="AI PDF Testing, Performance Evidence, and Repository Verification",
-        font=("Segoe UI", 10)
-    )
-    subtitle.pack(pady=4)
+    print("[1] Environment check:")
+    print(f" - Python: {sys.version.split()[0]}")
+    print(f" - Platform: {platform.platform()}")
+    print(f" - Working dir: {root}")
+    print()
 
-    text_box = tk.Text(window, wrap="word", font=("Consolas", 10))
-    text_box.pack(expand=True, fill="both", padx=16, pady=16)
-    text_box.insert("1.0", build_status_text())
-    text_box.config(state="disabled")
+    print("[2] Required file check:")
+    missing = []
+    for file_name in REQUIRED_FILES:
+        path = root / file_name
+        status = check_file(path)
+        print(f" - {file_name}: {status}")
+        if status == "MISSING":
+            missing.append(file_name)
 
-    close_button = ttk.Button(window, text="Close", command=window.destroy)
-    close_button.pack(pady=10)
+    print()
+    print("[3] Build ZIP check:")
+    zip_path = root / ZIP_FILE
+    if zip_path.exists():
+        print(f" - {ZIP_FILE}: FOUND")
+    else:
+        print(f" - {ZIP_FILE}: MISSING")
+        missing.append(ZIP_FILE)
 
-    window.mainloop()
+    print()
+    if missing:
+        print("RESULT: Some Milestone 11 files are missing.")
+        print("Missing files:")
+        for item in missing:
+            print(f" - {item}")
+        return 1
+
+    print("RESULT: PASS - Milestone 11 verification files are present.")
+    return 0
 
 if __name__ == "__main__":
-    main()
-EOF
+    raise SystemExit(main())

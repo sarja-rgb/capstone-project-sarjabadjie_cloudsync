@@ -1,4 +1,3 @@
-cat > milestone11_ui.py <<'EOF'
 import tkinter as tk
 from tkinter import ttk
 from pathlib import Path
@@ -70,4 +69,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
