@@ -1,10 +1,17 @@
+# CloudSync Manager — Milestone 11 Build
 
+ HEAD
 # CloudSync Manager â€” Milestone 11 Build
+
+This repository contains the Milestone 11 build package and supporting source files for CloudSync Manager / CloudSync Insight.
+
+## Milestone 11 Foc
 
 This repository contains the Milestone 11 build package and supporting source files for CloudSync Manager / CloudSync Insight.
 
 ## Milestone 11 Focus
 
+d01a0c49 (Milestone 12: finalize polish, verification, and build packaging)
 This Milestone 11 build demonstrates current progress toward the CloudSync Manager project goals:
 
 - Project structure verification for milestone delivery
@@ -17,7 +24,11 @@ This Milestone 11 build demonstrates current progress toward the CloudSync Manag
 
 ## Advisor Alignment
 
+ HEAD
 This milestone follows my advisorâ€™s recommendation to continue focusing on implementation progress and AI feature testing. The spaCy PDF testing evidence supports the planned document-intelligence feature for CloudSync Manager by showing how PDF text can be processed for named entity recognition, keyword extraction, and future file-insight features.
+
+This milestone follows my advisor’s recommendation to continue focusing on implementation progress and AI feature testing. The spaCy PDF testing evidence supports the planned document-intelligence feature for CloudSync Manager by showing how PDF text can be processed for named entity recognition, keyword extraction, and future file-insight features.
+ d01a0c49 (Milestone 12: finalize polish, verification, and build packaging)
 
 ## Files Included
 
@@ -39,4 +50,8 @@ Run these commands from the project root:
 ```bash
 cd /c/Users/sajab/capstone-project-sarjabadjie_cloudsync
 python milestone11.py
+ HEAD
 python milestone11_ui.py
+
+python milestone11_ui.py
+d01a0c49 (Milestone 12: finalize polish, verification, and build packaging)
