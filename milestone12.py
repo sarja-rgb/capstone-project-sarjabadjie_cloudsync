@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+ HEAD
 import os
 import platform
 from datetime import datetime
@@ -43,7 +43,7 @@ if len(missing) == 0:
     print("RESULT: PASS - Milestone 12 verification completed successfully.")
 else:
     print("RESULT: WARNING - Some files are missing.")
-=======
+
 import os
 import platform
 from datetime import datetime
@@ -88,4 +88,4 @@ if len(missing) == 0:
     print("RESULT: PASS - Milestone 12 verification completed successfully.")
 else:
     print("RESULT: WARNING - Some files are missing.")
->>>>>>> d67ca98e (Milestone 12: add verification and UI demo code)
+ d67ca98e (Milestone 12: add verification and UI demo code)

@@ -29,7 +29,7 @@ app = QApplication(sys.argv)
 window = Milestone12Demo()
 window.show()
 sys.exit(app.exec_())
-=======
+
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
 import sys
 
@@ -60,4 +60,4 @@ app = QApplication(sys.argv)
 window = Milestone12Demo()
 window.show()
 sys.exit(app.exec_())
->>>>>>> d67ca98e (Milestone 12: add verification and UI demo code)
+ d67ca98e (Milestone 12: add verification and UI demo code)
