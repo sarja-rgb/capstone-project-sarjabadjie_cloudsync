@@ -1,0 +1,53 @@
+import json, sqlite3, argparse
+import numpy as np
+import faiss
+from sentence_transformers import SentenceTransformer
+
+DB_PATH = "cloudsync_metadata.db"
+TABLE = "ai_text_metadata"
+INDEX_PATH = "vectors.index"
+META_PATH = "vectors_meta.json"
+
+def fetch_rows(limit: int):
+    con = sqlite3.connect(DB_PATH)
+    try:
+        rows = con.execute(f"SELECT id, source_name, summary FROM {TABLE} ORDER BY id DESC").fetchall()
+        return rows[:limit]
+    finally:
+        con.close()
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--limit", type=int, default=10)
+    ap.add_argument("--model", type=str, default="all-MiniLM-L6-v2")
+    args = ap.parse_args()
+
+    rows = fetch_rows(args.limit)
+    texts, meta = [], []
+    for row_id, source_name, summary in rows:
+        s = (summary or "").strip()
+        if not s:
+            continue
+        texts.append(s)
+        meta.append({"db_row_id": row_id, "source_name": source_name, "text": s})
+
+    if not texts:
+        raise SystemExit("ERROR: No summary text found in ai_text_metadata.")
+
+    model = SentenceTransformer(args.model)
+    vecs = model.encode(texts, convert_to_numpy=True).astype("float32")
+
+    # cosine similarity via inner product on normalized vectors
+    faiss.normalize_L2(vecs)
+    dim = vecs.shape[1]
+    index = faiss.IndexFlatIP(dim)
+    index.add(vecs)
+
+    faiss.write_index(index, INDEX_PATH)
+    with open(META_PATH, "w", encoding="utf-8") as f:
+        json.dump(meta, f, indent=2)
+
+    print("PASS: vectors.index and vectors_meta.json created (LOCAL embeddings)")
+
+if __name__ == "__main__":
+    main()
