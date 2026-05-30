@@ -23,3 +23,13 @@ __pycache__/
 run_log.txt
 sync_log.txt
 None
+# Local packaging / duplicates
+*.zip
+demo_tests_run_all/
+demo_testsrun_all.py
+run_all.py
+run_full_demo.py
+generate_demo_package.py
+rag_soundsoar_demo.py
+Python.txt
+capstone-project-sarjabadjie_cloudsync/
