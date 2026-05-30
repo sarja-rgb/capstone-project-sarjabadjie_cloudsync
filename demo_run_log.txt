@@ -1,0 +1,339 @@
+CloudSync Full Demo Log
+Started: 2026-05-30T01:47:58.494840
+
+
+
+================================================================================
+1) spaCy PDF Test
+CMD: C:\Users\sajab\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\demo_tests\spacy_pdf_test.py
+TIME: 2026-05-30T01:47:58.494840
+================================================================================
+Loading spaCy model...
+Reading PDF...
+Processing text with spaCy...
+CloudSync Manager - spaCy PDF Test Output
+==================================================
+Test Date/Time: 2026-05-30 01:48:00.381060
+PDF File Tested: SoundSoar.pdf
+
+Loading spaCy model: en_core_web_sm
+Reading PDF text using PyMuPDF...
+
+BASIC PDF TEXT SUMMARY
+--------------------------------------------------
+Total characters extracted: 50639
+Total words extracted: 6772
+
+NAMED ENTITIES EXTRACTED
+--------------------------------------------------
+SoundSoar -> PRODUCT
+Predicting Music Trends -> ORG
+Spotify -> GPE
+Victoria Grasso 
+Full -> PERSON
+Tampa -> GPE
+Florida -> GPE
+Spotify -> GPE
+the Spotify API -> FAC
+seven -> CARDINAL
+Random Forest -> ORG
+Histogram -> NORP
+Gradient Boosting -> ORG
+Spotify -> GPE
+Spotify -> GPE
+Spotify -> ORG
+the Spotify API 
+• -> FAC
+RandomForest -> ORG
+LogisticRegression -> ORG
+First -> ORDINAL
+BACKGROUND -> ORG
+SoundSoar -> ORG
+three -> CARDINAL
+Chartmetric -> ORG
+Songstat -> GPE
+SoundSoar -> ORG
+11 -> CARDINAL
+65 -> MONEY
+11 -> CARDINAL
+VISUAL -> ORG
+Two years -> DATE
+12 -> CARDINAL
+Artist -> NORP
+Chartmetric -> ORG
+13 -> CARDINAL
+Songstats -> PERSON
+Songstats -> PERSON
+Radiostats -> GPE
+14 -> CARDINAL
+14 -> CARDINAL
+Soundcharts -> PERSON
+Songstats -> PERSON
+Chartmetric -> PERSON
+Soundcharts -> PERSON
+Songstats -> PERSON
+Chartmetric -> PERSON
+65 -> MONEY
+Chartmetric -> ORG
+Spotify -> GPE
+Kang -> PERSON
+Mandulak -> PERSON
+Szymanski -> PERSON
+2022 -> DATE
+7 -> CARDINAL
+Araujo, Cristo -> ORG
+Giusti -> PERSON
+8 -> CARDINAL
+Sciandra -> GPE
+Spera -> PERSON
+9 -> CARDINAL
+Spotify -> ORG
+Saragih -> PERSON
+2023 -> DATE
+10 -> CARDINAL
+Spotify -> GPE
+Indonesian -> NORP
+first -> ORDINAL
+XGBoost -> ORG
+7 -> CARDINAL
+Mandulak -> PERSON
+Szymanski -> PERSON
+XGBoost -> ORG
+seven -> CARDINAL
+SVM -> LOC
+KNN -> ORG
+second -> ORDINAL
+
+KEYWORDS / IMPORTANT TERMS
+--------------------------------------------------
+model: 114
+feature: 99
+popularity: 88
+trend: 71
+datum: 48
+track: 47
+spotify: 42
+prediction: 36
+predict: 31
+music: 31
+audio: 30
+base: 30
+importance: 28
+provide: 27
+metric: 27
+like: 26
+song: 24
+performance: 24
+accuracy: 22
+study: 21
+approach: 21
+insight: 21
+machine: 20
+api: 20
+include: 20
+analysis: 20
+set: 19
+value: 17
+svm: 17
+hyperparameter: 17
+
+TEST RESULT
+--------------------------------------------------
+PASS: spaCy successfully loaded the model, read the PDF, extracted text, identified named entities, and generated keyword counts.
+
+Output saved to: spacy_pdf_test_output.txt
+PASS: spacy_pdf_test_output.txt generated.
+Output: C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\spacy_pdf_test_output.txt
+
+EXIT_CODE=0
+
+
+================================================================================
+2) spaCy -> SQLite Metadata
+CMD: C:\Users\sajab\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\demo_tests\demo_text_metadata_to_sqlite.py
+TIME: 2026-05-30T01:48:02.455490
+================================================================================
+Loading spaCy model...
+Processing sample CloudSync text...
+Saving AI text metadata to SQLite...
+
+CloudSync Manager - AI Text Metadata Demo
+=======================================================
+Database: cloudsync_metadata.db
+Table: ai_text_metadata
+
+Latest saved rows:
+(42, 'CloudSync spaCy demo text', '2026-05-30T05:48:04.280782+00:00', 'CloudSync Manager is a Python desktop application for cloud storage management. The project uses AWS S3, SQLite, and a local metadata database to track files, sync history, and future AI-generated text insights. This demo verifies...', 'cloudsync, manager, python, desktop, application, cloud, storage, management, project, use, sqlite, local, metadata, database, track', 'SQLite -> ORG; SQLite -> ORG')
+(41, 'CloudSync spaCy demo text', '2026-05-30T04:31:37.616316+00:00', 'CloudSync Manager is a Python desktop application for cloud storage management. The project uses AWS S3, SQLite, and a local metadata database to track files, sync history, and future AI-generated text insights. This demo verifies...', 'cloudsync, manager, python, desktop, application, cloud, storage, management, project, use, sqlite, local, metadata, database, track', 'SQLite -> ORG; SQLite -> ORG')
+(40, 'CloudSync spaCy demo text', '2026-05-30T03:30:26.340416+00:00', 'CloudSync Manager is a Python desktop application for cloud storage management. The project uses AWS S3, SQLite, and a local metadata database to track files, sync history, and future AI-generated text insights. This demo verifies...', 'cloudsync, manager, python, desktop, application, cloud, storage, management, project, use, sqlite, local, metadata, database, track', 'SQLite -> ORG; SQLite -> ORG')
+
+PASS: spaCy text metadata was extracted and saved to SQLite.
+
+EXIT_CODE=0
+
+
+================================================================================
+3) Build FAISS Vectors (LOCAL)
+CMD: C:\Users\sajab\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\demo_tests\build_vectors.py --limit 10
+TIME: 2026-05-30T01:48:04.523592
+================================================================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Embedding rows (LOCAL)...
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<?, ?it/s]
+
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]
+Batches: 100%|██████████| 1/1 [00:00<00:00, 12.86it/s]
+PASS: vectors.index and vectors_meta.json created (LOCAL embeddings)
+Index: C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\vectors.index
+Meta : C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\vectors_meta.json
+
+EXIT_CODE=0
+
+
+================================================================================
+4) Search FAISS Vectors (LOCAL)
+CMD: C:\Users\sajab\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\demo_tests\search_vectors.py Spotify music trends --topk 5
+TIME: 2026-05-30T01:48:10.556331
+================================================================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 12237.64it/s]
+=== FAISS RESULTS (LOCAL) ===
+Query: Spotify music trends
+1. score=0.1533 | row_id=38 | source=CloudSync spaCy demo text
+   CloudSync Manager is a Python desktop application for cloud storage management. The project uses AWS S3, SQLite, and a local metadata databa...
+2. score=0.1533 | row_id=39 | source=CloudSync spaCy demo text
+   CloudSync Manager is a Python desktop application for cloud storage management. The project uses AWS S3, SQLite, and a local metadata databa...
+3. score=0.1533 | row_id=40 | source=CloudSync spaCy demo text
+   CloudSync Manager is a Python desktop application for cloud storage management. The project uses AWS S3, SQLite, and a local metadata databa...
+4. score=0.1533 | row_id=41 | source=CloudSync spaCy demo text
+   CloudSync Manager is a Python desktop application for cloud storage management. The project uses AWS S3, SQLite, and a local metadata databa...
+5. score=0.1533 | row_id=42 | source=CloudSync spaCy demo text
+   CloudSync Manager is a Python desktop application for cloud storage management. The project uses AWS S3, SQLite, and a local metadata databa...
+PASS: FAISS search returned results (LOCAL)
+
+EXIT_CODE=0
+
+
+================================================================================
+5) Ollama Test
+CMD: C:\Users\sajab\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\demo_tests\ollama_test.py --model llama3.2:1b
+TIME: 2026-05-30T01:48:16.276219
+================================================================================
+=== OLLAMA TEST ===
+Server: http://localhost:11434
+Model : llama3.2:1b
+Response: I can read it.
+PASS: Ollama server reachable and generate returned.
+
+EXIT_CODE=0
+
+
+================================================================================
+6) RAG Q1
+CMD: C:\Users\sajab\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\demo_tests\rag_soundsoar_demo_fixed.py --question What ML models are mentioned in the paper? --topk 10
+TIME: 2026-05-30T01:48:21.107866
+================================================================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Reading PDF...
+Chunked into 47 chunks.
+Embedding chunks (LOCAL)...
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<?, ?it/s]
+
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]
+Batches:  50%|█████     | 1/2 [00:00<00:00,  3.41it/s]
+Batches: 100%|██████████| 2/2 [00:00<00:00,  5.29it/s]
+Batches: 100%|██████████| 2/2 [00:00<00:00,  4.88it/s]
+
+=== QUESTION ===
+What ML models are mentioned in the paper?
+
+=== TOP-K RETRIEVAL ===
+1. score=0.3566 | chunk=35 | the performance of the seven most recent models, along with the average performance metrics of all the models developed throughout the project. Model Accuracy Precision F1 Recall Confusion Matrix Parameters RF .86 .86 .8...
+2. score=0.3420 | chunk=28 | tures) set to ['sqrt'], bootstrap set to [True], and criterion as ['gini', 'entropy']. The Histogram-based Gradient Boosting Classifier (HistGradientBoosting) hyperparameters were defined as follows: number of boosting i...
+3. score=0.3334 | chunk=12 | LMM) to investigate the relationship between the different audio features—such as danceability and energy—and track popularity, emphasizing the importance of understanding these determinants in a data-driven music landsc...
+4. score=0.3051 | chunk=45 | ngo Software Foundation, "Django Documentation," [Online]. Available: https://docs.djangoproject.com/en/stable/. [6] Amazon Web Services, "AWS Documentation," [Online]. Available: https://aws.amazon.com/documentation/. [...
+5. score=0.2764 | chunk=36 | 29, 20, 0], [6, 94, 0], [ 1, 4, 6]] algorithm: auto, leaf_size: 5, metric: manhattan, n_neighbors: 21, weights: distance Table 5 – Active Model Performance (Sept 19 – Oct 19, 2024 Next, we will examine the feature import...
+6. score=0.2693 | chunk=34 | egression, SVM, and KNN. GridSearchCV is utilized to fine-tune hyperparameters, optimizing aspects such as estimators, learning rates, and depth configurations for models like RandomForest and HistGradientBoosting. Featu...
+7. score=0.2671 | chunk=7 | t factors could influence a song's popularity. To build on established findings, this review focuses on several core studies. Kang, Mandulak, and Szymanski (2022) [7] analyze professional musicians’ success, identifying ...
+8. score=0.2661 | chunk=13 | al music landscape. The final literature contributes to the growing field of machine learning in music analytics by employing both classification and regression techniques to predict song popularity based on Spotify’s au...
+9. score=0.2582 | chunk=0 | SoundSoar: Predicting Music Trends with Machine Learning and Spotify Victoria Grasso Full Sail University Tampa, Florida vngrasso@student.fullsail.edu Abstract— This study explores the application of machine learning mod...
+10. score=0.2555 | chunk=29 | ar Discriminant Analysis (LDA), the hyperparameters included solver options as ['svd', 'lsqr', 'eigen'] and priors set to [None, [0.5, 0.5], [0.3, 0.7]]. The Extra Trees Classifier featured hyperparameters such as the nu...
+
+Calling local LLM (Ollama)...
+
+=== ANSWER (OLLAMA) ===
+The ML models mentioned in the paper are:
+
+1. RandomForest
+2. Histogram-based Gradient Boosting
+3. Logistic Regression
+4. Support Vector Machine (SVM)
+5. Linear Discriminant Analysis (LDA)
+6. Extra Trees Classifier
+7. K-Nearest Neighbors (KNN)
+PASS: Retrieval + LLM answer completed.
+Saved log: C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\rag_soundsoar_log.txt
+
+EXIT_CODE=0
+
+
+================================================================================
+7) RAG Q2
+CMD: C:\Users\sajab\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\demo_tests\rag_soundsoar_demo_fixed.py --question What evaluation metrics are reported in the paper? --topk 10
+TIME: 2026-05-30T01:48:30.730891
+================================================================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Reading PDF...
+Chunked into 47 chunks.
+Embedding chunks (LOCAL)...
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6579.75it/s]
+
+Batches:   0%|          | 0/2 [00:00<?, ?it/s]
+Batches:  50%|█████     | 1/2 [00:00<00:00,  3.49it/s]
+Batches: 100%|██████████| 2/2 [00:00<00:00,  5.27it/s]
+Batches: 100%|██████████| 2/2 [00:00<00:00,  4.89it/s]
+
+=== QUESTION ===
+What evaluation metrics are reported in the paper?
+
+=== TOP-K RETRIEVAL ===
+1. score=0.4100 | chunk=30 | model training process also included essential data preprocessing steps, such as imputation for handling missing values and feature scaling, particularly for models sensitive to feature magnitudes, like Logistic Regressi...
+2. score=0.3981 | chunk=28 | tures) set to ['sqrt'], bootstrap set to [True], and criterion as ['gini', 'entropy']. The Histogram-based Gradient Boosting Classifier (HistGradientBoosting) hyperparameters were defined as follows: number of boosting i...
+3. score=0.3769 | chunk=38 | lysis Feature Importance Feature Name Importance Score track__valence 0.0779 track__tempo 0.0730 track__speechiness 0.0745 track__danceability 0.0760 track__liveness 0.0620 velocity 0.1034 current_popularity 0.0993 media...
+4. score=0.3753 | chunk=35 | the performance of the seven most recent models, along with the average performance metrics of all the models developed throughout the project. Model Accuracy Precision F1 Recall Confusion Matrix Parameters RF .86 .86 .8...
+5. score=0.3612 | chunk=31 | uding precision, recall, and F1-score for each trend category. Precision indicates how accurately the model made positive predictions, calculated by dividing the number of true positive predictions by the total number of...
+6. score=0.3512 | chunk=18 | nd evaluation and accurate predictions in SoundSoar. Feature engineering played a vital role in enhancing the predictive power of my model. I began by extracting raw audio features directly from Spotify’s Web API [15], i...
+7. score=0.3500 | chunk=36 | 29, 20, 0], [6, 94, 0], [ 1, 4, 6]] algorithm: auto, leaf_size: 5, metric: manhattan, n_neighbors: 21, weights: distance Table 5 – Active Model Performance (Sept 19 – Oct 19, 2024 Next, we will examine the feature import...
+8. score=0.3374 | chunk=46 | eview – Powerful Music Analytics for Professionals," YouTube, Apr. 10, 2021. [Online]. Available: https://www.youtube.com/watch?v=48fwZQ7Cqms [12] "Chartmetric Reviews," Trustpilot. https://www.trustpilot.com/review/char...
+9. score=0.3350 | chunk=34 | egression, SVM, and KNN. GridSearchCV is utilized to fine-tune hyperparameters, optimizing aspects such as estimators, learning rates, and depth configurations for models like RandomForest and HistGradientBoosting. Featu...
+10. score=0.3272 | chunk=45 | ngo Software Foundation, "Django Documentation," [Online]. Available: https://docs.djangoproject.com/en/stable/. [6] Amazon Web Services, "AWS Documentation," [Online]. Available: https://aws.amazon.com/documentation/. [...
+
+Calling local LLM (Ollama)...
+
+=== ANSWER (OLLAMA) ===
+The evaluation metrics reported in the paper include:
+
+- Accuracy
+- Precision
+- F1-score
+- Classification report
+- Confusion matrix
+- Graph-based Gradient Boosting Classifier (HistGradientBoosting) metrics
+- RandomForest feature importance scores
+- LogisticRegression feature importance scores
+- SVM features and classification accuracy
+- LDA features and classification accuracy
+
+These metrics provide insights into the performance of different models, including their ability to predict trends in music data.
+PASS: Retrieval + LLM answer completed.
+Saved log: C:\Users\sajab\capstone-project-sarjabadjie_cloudsync\rag_soundsoar_log.txt
+
+EXIT_CODE=0
