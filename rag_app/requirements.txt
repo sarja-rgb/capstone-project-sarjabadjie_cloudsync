@@ -1,0 +1,15 @@
+streamlit
+pymupdf
+python-docx
+sentence-transformers
+faiss-cpu
+numpy
+requests
+
+streamlit
+pymupdf
+python-docx
+sentence-transformers
+faiss-cpu
+numpy
+requests
