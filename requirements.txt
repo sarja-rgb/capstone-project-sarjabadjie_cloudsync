@@ -1,15 +1,8 @@
 streamlit
 pymupdf
-python-docx
+docx2txt
 sentence-transformers
 faiss-cpu
 numpy
 requests
-
-streamlit
-pymupdf
-python-docx
-sentence-transformers
-faiss-cpu
-numpy
-requests
+openai
