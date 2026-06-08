@@ -32,4 +32,28 @@ run_full_demo.py
 generate_demo_package.py
 rag_soundsoar_demo.py
 Python.txt
-capstone-project-sarjabadjie_cloudsync/
+capstone-project-sarjabadjie_cloudsync/# Local artifacts / logs
+demo_run_log.txt
+rag_soundsoar_log.txt
+spacy_pdf_test_output.txt
+vectors.index
+vectors_meta.json
+cloudsync_metadata.db
+rag_app/vectorstores/
+rag_app/.tmp_uploads/
+rag_app/data/
+
+# Secrets
+*sk-proj*.txt
+*.env
+
+# Random drafts
+Untitled*.txt
+Step*.txt
+README_RUN*.md
+*.png
+
+# Resume/Thesis exports (do NOT commit personal docs)
+resume*.txt
+thesis*.txt
+rag_app/sample_docs/
