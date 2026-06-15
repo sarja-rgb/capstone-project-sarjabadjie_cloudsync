@@ -1,11 +1,11 @@
 actor_name,target_images,current_images,metadata_rows,status,notes
-Brad Pitt,100,0,0,Not started,Need public/licensed image sources
-Denzel Washington,100,0,0,Not started,Need public/licensed image sources
-Johnny Depp,100,0,0,Not started,Need public/licensed image sources
-Keanu Reeves,100,0,0,Not started,Need public/licensed image sources
-Leonardo DiCaprio,100,0,0,Not started,Need public/licensed image sources
-Morgan Freeman,100,0,0,Not started,Need public/licensed image sources
-Robert Downey Jr.,100,0,0,Not started,Need public/licensed image sources
-Samuel L. Jackson,100,0,0,Not started,Need public/licensed image sources
-Tom Hanks,100,0,0,Not started,Need public/licensed image sources
-Will Smith,100,0,0,Not started,Need public/licensed image sources
+Tom Hanks,100,4,4,In progress,Review images manually before annotation.
+Denzel Washington,100,3,3,In progress,Review images manually before annotation.
+Will Smith,100,2,2,In progress,Review images manually before annotation.
+Leonardo DiCaprio,100,3,3,In progress,Review images manually before annotation.
+Morgan Freeman,100,2,2,In progress,Review images manually before annotation.
+Samuel L. Jackson,100,0,0,Not started,Review images manually before annotation.
+Keanu Reeves,100,3,3,In progress,Review images manually before annotation.
+Brad Pitt,100,4,4,In progress,Review images manually before annotation.
+Robert Downey Jr.,100,1,1,In progress,Review images manually before annotation.
+Johnny Depp,100,0,0,Not started,Review images manually before annotation.
