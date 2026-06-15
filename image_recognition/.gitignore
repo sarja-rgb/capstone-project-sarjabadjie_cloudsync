@@ -2,15 +2,21 @@ dataset/raw/**/*.jpg
 dataset/raw/**/*.jpeg
 dataset/raw/**/*.png
 dataset/raw/**/*.webp
+
 dataset/train/**/*.jpg
 dataset/train/**/*.jpeg
 dataset/train/**/*.png
+dataset/train/**/*.webp
+
 dataset/valid/**/*.jpg
 dataset/valid/**/*.jpeg
 dataset/valid/**/*.png
+dataset/valid/**/*.webp
+
 dataset/test/**/*.jpg
 dataset/test/**/*.jpeg
 dataset/test/**/*.png
+dataset/test/**/*.webp
 
 !dataset/raw/**/.gitkeep
 !dataset/train/**/.gitkeep
