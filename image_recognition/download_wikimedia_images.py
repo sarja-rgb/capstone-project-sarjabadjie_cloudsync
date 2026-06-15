@@ -12,26 +12,27 @@ ROOT = Path(__file__).resolve().parent
 ACTORS_CSV = ROOT / "actors.csv"
 RAW_DIR = ROOT / "dataset" / "raw"
 METADATA_CSV = ROOT / "dataset_metadata.csv"
-
 COMMONS_API = "https://commons.wikimedia.org/w/api.php"
 
 HEADERS = {
-    "User-Agent": "CloudSyncImageRecognitionDemo/1.0 educational capstone dataset collection"
+    "User-Agent": "CloudSyncImageRecognitionDemo/1.0 (educational capstone; local dataset collection)"
 }
 
 
-def safe_folder_name(name: str) -> str:
+def safe_name(name):
     return re.sub(r"[^\w\-]+", "_", name).strip("_")
 
 
-def safe_file_name(name: str) -> str:
-    return re.sub(r"[^\w\-.]+", "_", name).strip("_")
+def clean_html(value):
+    if not value:
+        return "Unknown"
+    return re.sub(r"<.*?>", "", str(value)).replace(",", " ").strip()
 
 
-def get_extension_from_url(url: str) -> str:
+def get_extension(url):
     path = urlparse(url).path.lower()
     for ext in [".jpg", ".jpeg", ".png", ".webp"]:
-        if path.endswith(ext):
+        if ext in path:
             return ext
     return ".jpg"
 
@@ -42,19 +43,32 @@ def read_actors():
         return [row["actor_name"].strip() for row in reader if row.get("actor_name", "").strip()]
 
 
-def search_commons_images(actor_name: str, limit: int):
+def existing_metadata_rows():
+    rows = set()
+    if not METADATA_CSV.exists():
+        return rows
+
+    with METADATA_CSV.open("r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            rows.add((row.get("actor_name", ""), row.get("source_url", "")))
+    return rows
+
+
+def search_commons(actor_name, limit):
     params = {
         "action": "query",
         "format": "json",
         "generator": "search",
-        "gsrsearch": f'{actor_name} portrait OR {actor_name} actor',
+        "gsrsearch": f'"{actor_name}" actor portrait',
         "gsrnamespace": "6",
-        "gsrlimit": str(limit * 3),
+        "gsrlimit": str(limit * 8),
         "prop": "imageinfo",
         "iiprop": "url|mime|extmetadata",
+        "iiurlwidth": "640",
     }
 
-    response = requests.get(COMMONS_API, params=params, headers=HEADERS, timeout=30)
+    response = requests.get(COMMONS_API, params=params, headers=HEADERS, timeout=40)
     response.raise_for_status()
     data = response.json()
 
@@ -62,21 +76,22 @@ def search_commons_images(actor_name: str, limit: int):
     results = []
 
     for page in pages.values():
-        imageinfo = page.get("imageinfo", [])
-        if not imageinfo:
+        info_list = page.get("imageinfo", [])
+        if not info_list:
             continue
 
-        info = imageinfo[0]
-        url = info.get("url", "")
+        info = info_list[0]
+        full_url = info.get("url", "")
+        thumb_url = info.get("thumburl", "")
         mime = info.get("mime", "")
 
-        if not url:
+        download_url = thumb_url or full_url
+
+        if not download_url or not mime.startswith("image/"):
             continue
 
-        if not mime.startswith("image/"):
-            continue
-
-        if any(skip in url.lower() for skip in [".svg", ".gif", ".tif", ".tiff"]):
+        lowered = download_url.lower()
+        if any(bad in lowered for bad in [".svg", ".gif", ".tif", ".tiff"]):
             continue
 
         metadata = info.get("extmetadata", {})
@@ -84,9 +99,10 @@ def search_commons_images(actor_name: str, limit: int):
         author = metadata.get("Artist", {}).get("value", "Unknown")
 
         results.append({
-            "url": url,
-            "license": re.sub(r"<.*?>", "", license_name),
-            "author": re.sub(r"<.*?>", "", author),
+            "download_url": download_url,
+            "source_url": full_url,
+            "license": clean_html(license_name),
+            "author": clean_html(author),
         })
 
         if len(results) >= limit:
@@ -95,7 +111,7 @@ def search_commons_images(actor_name: str, limit: int):
     return results
 
 
-def download_file(url: str, output_path: Path):
+def download_file(url, output_path):
     response = requests.get(url, headers=HEADERS, timeout=60)
     response.raise_for_status()
     output_path.write_bytes(response.content)
@@ -116,54 +132,65 @@ def append_metadata(row):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--limit", type=int, default=5, help="Number of images to download per actor")
+    parser.add_argument("--limit", type=int, default=3, help="Images to download per actor")
+    parser.add_argument("--delay", type=float, default=8.0, help="Delay between downloads")
     args = parser.parse_args()
 
     actors = read_actors()
+    seen = existing_metadata_rows()
 
     print(f"Loaded {len(actors)} actors.")
-    print(f"Downloading up to {args.limit} candidate images per actor.")
-    print("Important: manually review images after download.")
+    print(f"Downloading up to {args.limit} thumbnail images per actor.")
+    print(f"Delay between downloads: {args.delay} seconds.")
+    print("Manually review images after download.")
 
     for actor in actors:
-        folder = RAW_DIR / safe_folder_name(actor)
-        folder.mkdir(parents=True, exist_ok=True)
+        actor_folder = RAW_DIR / safe_name(actor)
+        actor_folder.mkdir(parents=True, exist_ok=True)
 
-        print(f"\nSearching images for: {actor}")
-        images = search_commons_images(actor, args.limit)
+        print(f"\nSearching Wikimedia Commons for: {actor}")
+        images = search_commons(actor, args.limit)
 
         if not images:
-            print(f"  No images found for {actor}.")
+            print(f"  No image candidates found for {actor}.")
             continue
 
-        for index, image in enumerate(images, start=1):
-            ext = get_extension_from_url(image["url"])
-            filename = safe_file_name(f"{safe_folder_name(actor)}_{index:03d}{ext}")
-            output_path = folder / filename
+        downloaded_count = 0
 
-            if output_path.exists():
-                print(f"  Skipping existing file: {filename}")
+        for index, image in enumerate(images, start=1):
+            if (actor, image["source_url"]) in seen:
+                print("  Skipping duplicate metadata source.")
                 continue
 
+            ext = get_extension(image["download_url"])
+            filename = f"{safe_name(actor)}_{int(time.time())}_{index:03d}{ext}"
+            output_path = actor_folder / filename
+
             try:
-                download_file(image["url"], output_path)
+                download_file(image["download_url"], output_path)
 
                 append_metadata({
                     "actor_name": actor,
                     "image_filename": str(output_path.relative_to(ROOT)).replace("\\", "/"),
-                    "source_url": image["url"],
+                    "source_url": image["source_url"],
                     "license": image["license"],
                     "author": image["author"],
-                    "notes": "Wikimedia Commons candidate image; manually verify before annotation.",
+                    "notes": "Wikimedia Commons thumbnail candidate image; manually verify before annotation.",
                 })
 
+                seen.add((actor, image["source_url"]))
+                downloaded_count += 1
                 print(f"  Downloaded: {filename}")
-                time.sleep(0.5)
+
+                time.sleep(args.delay)
 
             except Exception as error:
-                print(f"  Failed: {image['url']} | {error}")
+                print(f"  Failed: {image['download_url']} | {error}")
+                time.sleep(args.delay)
 
-    print("\nDone. Review downloaded images before using them for training.")
+        print(f"  Finished {actor}: downloaded {downloaded_count} new images.")
+
+    print("\nDone. Review images before annotation or training.")
 
 
 if __name__ == "__main__":
