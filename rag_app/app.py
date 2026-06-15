@@ -1,35 +1,21 @@
-# rag_app/app.py
-# CloudSync Multi-Document RAG (Demo)
-# - Upload multiple PDF/DOCX/TXT
-# - Build FAISS index (local embeddings)
-# - Ask questions (Local: Ollama, or OpenAI)
-# - Show citations/evidence chunks
-#
-# NOTE: Avoid torchvision import issues from transformers on some Windows setups:
+﻿from __future__ import annotations
+
 import os
-os.environ.setdefault("TRANSFORMERS_NO_TORCHVISION", "1")
-os.environ.setdefault("PYTHONUTF8", "1")
-
+import tempfile
 from dataclasses import dataclass
-from typing import List, Dict, Tuple, Optional
-from pathlib import Path
-import json
-import time
-import requests
+from typing import Dict, List
 
-import streamlit as st
-
-# Local embeddings + FAISS
-import numpy as np
 import faiss
-from sentence_transformers import SentenceTransformer
-
-# PDF + DOCX text extraction
 import fitz  # PyMuPDF
+import numpy as np
+import requests
+import streamlit as st
 import docx2txt
+from sentence_transformers import SentenceTransformer
 
 
 APP_TITLE = "CloudSync Multi-Document RAG (Demo)"
+DEFAULT_SURVEY_URL = "https://www.surveymonkey.com/r/TC6L3GF"
 
 
 @dataclass
@@ -39,145 +25,290 @@ class Chunk:
     text: str
 
 
-def read_pdf_bytes(pdf_bytes: bytes) -> str:
-    doc = fitz.open(stream=pdf_bytes, filetype="pdf")
-    parts = []
-    for page in doc:
-        parts.append(page.get_text("text"))
-    return "\n".join(parts).strip()
+def init_state() -> None:
+    if "docs" not in st.session_state:
+        st.session_state.docs: Dict[str, List[Chunk]] = {}
+
+    if "chunk_lookup" not in st.session_state:
+        st.session_state.chunk_lookup: List[Chunk] = []
+
+    if "index" not in st.session_state:
+        st.session_state.index = None
 
 
-def read_docx_bytes(docx_bytes: bytes) -> str:
-    # docx2txt wants a file path, so we write temp
-    tmp_dir = Path(st.session_state.get("_tmp_dir", "."))
-    tmp_dir.mkdir(parents=True, exist_ok=True)
-    tmp_path = tmp_dir / f"upload_{int(time.time()*1000)}.docx"
-    tmp_path.write_bytes(docx_bytes)
-    text = docx2txt.process(str(tmp_path)) or ""
+@st.cache_resource(show_spinner=False)
+def get_embed_model() -> SentenceTransformer:
+    return SentenceTransformer("all-MiniLM-L6-v2")
+
+
+def clean_text(text: str) -> str:
+    return " ".join((text or "").replace("\x00", " ").split())
+
+
+def extract_pdf(uploaded_file) -> str:
+    pdf_bytes = uploaded_file.getvalue()
+    text_parts = []
+
+    with fitz.open(stream=pdf_bytes, filetype="pdf") as doc:
+        for page in doc:
+            text_parts.append(page.get_text("text"))
+
+    return clean_text("\n".join(text_parts))
+
+
+def extract_docx(uploaded_file) -> str:
+    suffix = ".docx"
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+        temp_file.write(uploaded_file.getvalue())
+        temp_path = temp_file.name
+
     try:
-        tmp_path.unlink(missing_ok=True)
-    except Exception:
-        pass
-    return text.strip()
+        return clean_text(docx2txt.process(temp_path))
+    finally:
+        try:
+            os.remove(temp_path)
+        except OSError:
+            pass
 
 
-def read_txt_bytes(txt_bytes: bytes) -> str:
-    return txt_bytes.decode("utf-8", errors="replace").strip()
+def extract_txt(uploaded_file) -> str:
+    return clean_text(uploaded_file.getvalue().decode("utf-8", errors="replace"))
+
+
+def extract_text(uploaded_file) -> str:
+    name = uploaded_file.name.lower()
+
+    if name.endswith(".pdf"):
+        return extract_pdf(uploaded_file)
+
+    if name.endswith(".docx"):
+        return extract_docx(uploaded_file)
+
+    if name.endswith(".txt"):
+        return extract_txt(uploaded_file)
+
+    return ""
 
 
 def chunk_text(text: str, chunk_size: int = 900, overlap: int = 120) -> List[str]:
-    text = " ".join(text.split())
+    text = clean_text(text)
+
     if not text:
         return []
+
     chunks = []
-    i = 0
-    while i < len(text):
-        end = min(i + chunk_size, len(text))
-        chunks.append(text[i:end])
-        i = max(end - overlap, end)
+    start = 0
+
+    while start < len(text):
+        end = min(start + chunk_size, len(text))
+        chunk = text[start:end].strip()
+
+        if chunk:
+            chunks.append(chunk)
+
+        if end >= len(text):
+            break
+
+        start = max(end - overlap, start + 1)
+
     return chunks
 
 
-def ensure_state():
-    if "docs" not in st.session_state:
-        st.session_state.docs: Dict[str, List[Chunk]] = {}
-    if "index" not in st.session_state:
-        st.session_state.index = None
-    if "chunk_lookup" not in st.session_state:
-        st.session_state.chunk_lookup: List[Chunk] = []
-    if "embed_model" not in st.session_state:
-        st.session_state.embed_model = None
-    if "_tmp_dir" not in st.session_state:
-        st.session_state._tmp_dir = str(Path(__file__).resolve().parent / ".tmp_uploads")
-
-
 def build_index(all_chunks: List[Chunk], model: SentenceTransformer) -> faiss.Index:
-    texts = [c.text for c in all_chunks]
-    emb = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
-    emb = np.asarray(emb, dtype="float32")
-    dim = emb.shape[1]
-    index = faiss.IndexFlatIP(dim)  # cosine via normalized + inner product
-    index.add(emb)
+    texts = [chunk.text for chunk in all_chunks]
+
+    embeddings = model.encode(
+        texts,
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+    ).astype("float32")
+
+    dim = embeddings.shape[1]
+    index = faiss.IndexFlatIP(dim)  # Normalized embeddings + inner product = cosine similarity
+    index.add(embeddings)
+
     return index
 
 
-def ollama_generate(prompt: str, model: str, server: str) -> str:
-    url = server.rstrip("/") + "/api/generate"
-    payload = {"model": model, "prompt": prompt, "stream": False}
-    r = requests.post(url, json=payload, timeout=120)
-    r.raise_for_status()
-    data = r.json()
-    return (data.get("response") or "").strip()
-
-
-def openai_generate(prompt: str, api_key: str, model: str = "gpt-4.1-mini") -> str:
-    # Uses OpenAI Python SDK if installed; otherwise falls back to HTTP.
-    # This keeps things simple for your demo.
+def score_to_match_percent(score: float) -> float:
+    """
+    FAISS IndexFlatIP with normalized embeddings returns similarity.
+    Higher score is better. This converts it into a readable percentage.
+    """
     try:
-        from openai import OpenAI
-        client = OpenAI(api_key=api_key)
-        resp = client.responses.create(
-            model=model,
-            input=[{"role": "user", "content": prompt}],
-        )
-        # Grab text
-        out = []
-        for item in resp.output:
-            if item.type == "message":
-                for c in item.content:
-                    if c.type == "output_text":
-                        out.append(c.text)
-        return "\n".join(out).strip()
+        score = float(score)
     except Exception:
-        # Fallback (works if requests can reach api.openai.com)
-        import requests as _rq
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-        body = {
-            "model": model,
-            "input": [{"role": "user", "content": prompt}],
-        }
-        rr = _rq.post("https://api.openai.com/v1/responses", headers=headers, json=body, timeout=120)
-        rr.raise_for_status()
-        j = rr.json()
-        # best-effort parse
-        txt = []
-        for o in j.get("output", []):
-            if o.get("type") == "message":
-                for c in o.get("content", []):
-                    if c.get("type") == "output_text":
-                        txt.append(c.get("text", ""))
-        return "\n".join(txt).strip()
+        return 0.0
+
+    percent = score * 100.0
+    return max(0.0, min(100.0, percent))
 
 
-def make_prompt(question: str, retrieved: List[Chunk]) -> str:
-    context = "\n\n".join([f"[{i+1}] ({c.doc_name}) {c.text}" for i, c in enumerate(retrieved)])
-    return (
-        "You are a helpful assistant. Answer using ONLY the provided context.\n"
-        "If the answer is not in the context, say: 'Not found in the provided documents.'\n\n"
-        f"QUESTION:\n{question}\n\n"
-        f"CONTEXT:\n{context}\n\n"
-        "FINAL ANSWER:"
+def retrieve_chunks(question: str, scope: str, topk: int) -> List[dict]:
+    model = get_embed_model()
+
+    query_embedding = model.encode(
+        [question],
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+    ).astype("float32")
+
+    max_search = min(max(topk * 5, topk), len(st.session_state.chunk_lookup))
+    distances, indexes = st.session_state.index.search(query_embedding, max_search)
+
+    results = []
+
+    for score, idx in zip(distances[0], indexes[0]):
+        if idx < 0:
+            continue
+
+        chunk = st.session_state.chunk_lookup[idx]
+
+        if scope != "All documents" and chunk.doc_name != scope:
+            continue
+
+        results.append(
+            {
+                "source": chunk.doc_name,
+                "chunk_id": chunk.chunk_id,
+                "text": chunk.text,
+                "score": float(score),
+                "match_percent": score_to_match_percent(float(score)),
+            }
+        )
+
+    results = sorted(results, key=lambda item: item["match_percent"], reverse=True)
+    return results[:topk]
+
+
+def make_prompt(question: str, retrieved: List[dict]) -> str:
+    context_blocks = []
+
+    for rank, item in enumerate(retrieved, start=1):
+        context_blocks.append(
+            f"[{rank}] Source: {item['source']} | "
+            f"Match: {item['match_percent']:.1f}% | "
+            f"Chunk: {item['chunk_id']}\n"
+            f"{item['text']}"
+        )
+
+    context = "\n\n".join(context_blocks)
+
+    return f"""
+You are helping answer questions about uploaded documents.
+
+Use only the document context below. If the answer is not supported by the context, say that the answer is not found in the uploaded documents.
+
+Question:
+{question}
+
+Document context:
+{context}
+
+Answer clearly and briefly. Mention the source document name when useful.
+""".strip()
+
+
+def call_ollama(prompt: str, model_name: str, server_url: str) -> str:
+    url = server_url.rstrip("/") + "/api/generate"
+
+    payload = {
+        "model": model_name,
+        "prompt": prompt,
+        "stream": False,
+    }
+
+    response = requests.post(url, json=payload, timeout=180)
+    response.raise_for_status()
+
+    data = response.json()
+    return data.get("response", "").strip()
+
+
+def call_openai(prompt: str) -> str:
+    from openai import OpenAI
+
+    client = OpenAI()
+    model_name = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+    response = client.chat.completions.create(
+        model=model_name,
+        messages=[
+            {
+                "role": "system",
+                "content": "Answer using only the retrieved document context.",
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
     )
 
+    return response.choices[0].message.content.strip()
 
-def main():
-    ensure_state()
 
-    st.set_page_config(page_title="CloudSync RAG Demo", page_icon="💬", layout="wide")
-    st.title("💬 " + APP_TITLE)
-    st.caption("Upload docs → select a doc (or all) → ask questions → see citations/evidence + feedback link.")
+def generate_answer(question: str, retrieved: List[dict], answer_mode: str, ollama_model: str, ollama_server: str) -> str:
+    prompt = make_prompt(question, retrieved)
 
-    # Sidebar controls
-    st.sidebar.header("CloudSync RAG Demo")
+    try:
+        if answer_mode.startswith("OpenAI"):
+            return call_openai(prompt)
+
+        return call_ollama(prompt, ollama_model, ollama_server)
+
+    except Exception as error:
+        fallback = " ".join(item["text"] for item in retrieved[:2])
+        if fallback:
+            return (
+                "The local generator could not finish the answer, but the retrieval step worked. "
+                "Here is the strongest retrieved evidence: "
+                + fallback[:900]
+                + f"\n\nGenerator error: {error}"
+            )
+
+        return f"No answer could be generated. Error: {error}"
+
+
+def render_evidence(evidence_box, retrieved: List[dict]) -> None:
+    with evidence_box:
+        if not retrieved:
+            st.info("No citation evidence was retrieved for this question.")
+            return
+
+        for rank, item in enumerate(retrieved, start=1):
+            label = (
+                f"{rank}) [{item['source']}] — "
+                f"{item['match_percent']:.1f}% match — "
+                f"chunk {item['chunk_id']}"
+            )
+
+            with st.expander(label, expanded=(rank == 1)):
+                st.write(item["text"])
+
+
+def main() -> None:
+    st.set_page_config(
+        page_title="CloudSync RAG Demo",
+        page_icon="💬",
+        layout="wide",
+    )
+
+    init_state()
+
+    st.sidebar.title("CloudSync RAG Demo")
+
     survey_url = st.sidebar.text_input(
         "Feedback survey URL (SurveyMonkey)",
-        value="https://www.surveymonkey.com/r/YOUR_SURVEY_LINK",
+        value=DEFAULT_SURVEY_URL,
     )
 
     answer_mode = st.sidebar.selectbox(
         "Answer mode",
         ["Local (FAISS + Ollama)", "OpenAI (FAISS + OpenAI)"],
-        index=0,
     )
 
     topk = st.sidebar.slider("Top-K chunks", min_value=3, max_value=12, value=6)
@@ -185,135 +316,115 @@ def main():
     ollama_model = st.sidebar.text_input("Ollama model", value="llama3.2:1b")
     ollama_server = st.sidebar.text_input("Ollama server", value="http://localhost:11434")
 
-    openai_key = ""
-    if answer_mode.startswith("OpenAI"):
-        openai_key = st.sidebar.text_input("OPENAI_API_KEY (for this session)", type="password")
+    st.sidebar.divider()
+    st.sidebar.subheader("Upload documents")
 
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("**Upload documents**")
-    uploads = st.sidebar.file_uploader(
+    uploaded_files = st.sidebar.file_uploader(
         "Upload PDF / DOCX / TXT (multiple allowed)",
         type=["pdf", "docx", "txt"],
         accept_multiple_files=True,
     )
 
-    col_left, col_right = st.columns([2, 1], gap="large")
-    with col_left:
-        # Build doc scope dropdown
-        doc_names = sorted(st.session_state.docs.keys())
-        scope = st.selectbox("Choose document scope", ["All documents"] + doc_names)
+    if uploaded_files:
+        all_chunks: List[Chunk] = []
+        st.session_state.docs = {}
 
-        st.subheader("Chat")
-        question = st.text_input("Ask a question about your uploaded documents…")
-
-        run_btn = st.button("Ask", type="primary", use_container_width=True)
-
-        info = (
-            "Tester note: This demo runs retrieval locally (FAISS + local embeddings). "
-            "Local mode uses Ollama on this machine for generation; OpenAI mode uses your OpenAI key."
-        )
-        st.info(info)
-
-    with col_right:
-        st.subheader("Citations / Evidence")
-        st.caption("Top retrieved chunks used to answer your question.")
-        citation_box = st.container()
-
-    # Handle uploads
-    if uploads:
-        for f in uploads:
-            name = f.name
-            data = f.read()
-            ext = name.lower().split(".")[-1]
+        for uploaded_file in uploaded_files:
             try:
-                if ext == "pdf":
-                    text = read_pdf_bytes(data)
-                elif ext == "docx":
-                    text = read_docx_bytes(data)
-                else:
-                    text = read_txt_bytes(data)
-            except Exception as e:
-                st.sidebar.error(f"Failed to read {name}: {e}")
-                continue
+                text = extract_text(uploaded_file)
+                parts = chunk_text(text)
+                chunks = [
+                    Chunk(doc_name=uploaded_file.name, chunk_id=i, text=part)
+                    for i, part in enumerate(parts)
+                ]
 
-            parts = chunk_text(text)
-            chunks = [Chunk(doc_name=name, chunk_id=i, text=t) for i, t in enumerate(parts)]
-            st.session_state.docs[name] = chunks
+                st.session_state.docs[uploaded_file.name] = chunks
+                all_chunks.extend(chunks)
 
-        # Build/refresh index after uploads
-        all_chunks = []
-        for dn, clist in st.session_state.docs.items():
-            all_chunks.extend(clist)
+            except Exception as error:
+                st.sidebar.error(f"Could not process {uploaded_file.name}: {error}")
 
         if all_chunks:
-            if st.session_state.embed_model is None:
-                st.session_state.embed_model = SentenceTransformer("all-MiniLM-L6-v2")
-            st.session_state.index = build_index(all_chunks, st.session_state.embed_model)
-            st.session_state.chunk_lookup = all_chunks
-            st.sidebar.success(f"Indexed {len(all_chunks)} chunks across {len(st.session_state.docs)} documents.")
+            with st.spinner("Building document index..."):
+                model = get_embed_model()
+                st.session_state.index = build_index(all_chunks, model)
+                st.session_state.chunk_lookup = all_chunks
 
-    # Ask / Retrieve / Answer
-    if run_btn and question.strip():
-        if st.session_state.index is None or not st.session_state.chunk_lookup:
-            st.error("Upload at least one document first.")
+            st.sidebar.success(
+                f"Indexed {len(all_chunks)} chunks across {len(st.session_state.docs)} documents."
+            )
+
+    st.title("💬 CloudSync Multi-Document RAG (Demo)")
+    st.caption(
+        "Upload docs → select a doc (or all) → ask questions → see match %, source documents, citations/evidence, and feedback link."
+    )
+
+    left_col, right_col = st.columns([1.45, 1])
+
+    with left_col:
+        document_options = ["All documents"] + list(st.session_state.docs.keys())
+
+        scope = st.selectbox(
+            "Choose document scope",
+            document_options,
+            index=0,
+        )
+
+        st.subheader("Chat")
+
+        question = st.text_input(
+            "Ask a question about your uploaded documents...",
+            placeholder="Example: Which document has the strongest match for skills or experience?",
+        )
+
+        ask_clicked = st.button("Ask", type="primary", use_container_width=True)
+
+        st.info(
+            "Tester note: This demo runs retrieval locally using FAISS + local embeddings. "
+            "Local mode uses Ollama on this machine for generation."
+        )
+
+        answer_placeholder = st.empty()
+        feedback_placeholder = st.empty()
+
+    with right_col:
+        st.subheader("Citations / Evidence")
+        st.caption("Retrieved chunks are sorted by match percentage from highest to lowest.")
+        evidence_box = st.container()
+
+    if ask_clicked:
+        if not uploaded_files or st.session_state.index is None or not st.session_state.chunk_lookup:
+            st.warning("Please upload documents first.")
             return
 
-        # Filter chunks by scope
-        if scope == "All documents":
-            eligible = st.session_state.chunk_lookup
-            eligible_ids = None  # no filter
-        else:
-            eligible = st.session_state.docs.get(scope, [])
-            eligible_ids = set(id(c) for c in eligible)
+        if not question.strip():
+            st.warning("Please enter a question.")
+            return
 
-        # Embed query
-        model = st.session_state.embed_model or SentenceTransformer("all-MiniLM-L6-v2")
-        q = model.encode([question], normalize_embeddings=True)
-        q = np.asarray(q, dtype="float32")
+        retrieved = retrieve_chunks(question.strip(), scope, topk)
 
-        # Search
-        D, I = st.session_state.index.search(q, k=min(topk * 4, len(st.session_state.chunk_lookup)))
-        hits: List[Chunk] = []
-        for idx in I[0].tolist():
-            if idx < 0:
-                continue
-            c = st.session_state.chunk_lookup[idx]
-            if eligible_ids is None or id(c) in eligible_ids:
-                hits.append(c)
-            if len(hits) >= topk:
-                break
-
-        if not hits:
+        if not retrieved:
             st.warning("No relevant chunks found for that document scope.")
             return
 
-        # Answer
-        prompt = make_prompt(question, hits)
-        try:
-            if answer_mode.startswith("Local"):
-                answer = ollama_generate(prompt, model=ollama_model, server=ollama_server)
-            else:
-                if not openai_key.strip().startswith("sk-"):
-                    st.error("Enter a valid OpenAI key in the sidebar (starts with sk-).")
-                    return
-                answer = openai_generate(prompt, api_key=openai_key.strip())
-        except Exception as e:
-            st.error(f"LLM call failed: {e}")
-            return
+        with st.spinner("Generating answer..."):
+            answer = generate_answer(
+                question=question.strip(),
+                retrieved=retrieved,
+                answer_mode=answer_mode,
+                ollama_model=ollama_model,
+                ollama_server=ollama_server,
+            )
 
-        # Show answer + citations
-        with col_left:
-            st.markdown("### Answer")
+        with answer_placeholder.container():
+            st.subheader("Answer")
             st.write(answer)
 
-            if survey_url.strip():
-                st.markdown("### Feedback")
-                st.markdown(f"[Give Feedback (Survey)]({survey_url.strip()})")
+        with feedback_placeholder.container():
+            st.subheader("Feedback")
+            st.link_button("Give Feedback (Survey)", survey_url)
 
-        with citation_box:
-            for i, c in enumerate(hits):
-                with st.expander(f"{i+1}) {c.doc_name}  — chunk {c.chunk_id}", expanded=(i == 0)):
-                    st.write(c.text)
+        render_evidence(evidence_box, retrieved)
 
 
 if __name__ == "__main__":
