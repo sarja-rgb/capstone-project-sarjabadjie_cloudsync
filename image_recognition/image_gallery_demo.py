@@ -1,9 +1,11 @@
 ﻿from pathlib import Path
+import csv
 import streamlit as st
 
 
 ROOT = Path(__file__).resolve().parent
 RAW_DIR = ROOT / "dataset" / "raw"
+TRACKER_CSV = ROOT / "dataset_progress_tracker.csv"
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
@@ -27,11 +29,12 @@ st.set_page_config(
 )
 
 st.title("CloudSync Insight - Image Recognition Dataset Gallery")
+st.caption("Image Recognition Part 2 - Dataset Preparation Checkpoint")
 
 st.write(
-    "This live demo shows the current Image Recognition Part 2 dataset. "
-    "Each actor folder is displayed with its correct actor name and the images currently collected for that actor. "
-    "This is dataset preparation evidence only. Model prediction and bounding-box detection are later steps."
+    "This live gallery shows the current actor image dataset for the CloudSync Insight image-recognition checkpoint. "
+    "Each image is displayed under the correct actor name. This page is for dataset proof only; prediction, "
+    "bounding boxes, annotation, training, and evaluation are later steps."
 )
 
 
@@ -48,32 +51,64 @@ def get_actor_images(folder_path):
     return images
 
 
-total_images = 0
+def load_tracker_rows():
+    rows = {}
 
-st.subheader("Dataset Summary")
+    if not TRACKER_CSV.exists():
+        return rows
+
+    with TRACKER_CSV.open("r", encoding="utf-8-sig", newline="") as file:
+        reader = csv.DictReader(file)
+
+        for row in reader:
+            actor_name = row.get("actor_name", "").strip()
+            if actor_name:
+                rows[actor_name] = row
+
+    return rows
+
+
+tracker_rows = load_tracker_rows()
 
 summary_rows = []
+total_images = 0
 
 for folder_name, actor_name in ACTOR_DISPLAY_NAMES.items():
     folder_path = RAW_DIR / folder_name
     images = get_actor_images(folder_path)
-    total_images += len(images)
+    image_count = len(images)
+    total_images += image_count
+
+    tracker_row = tracker_rows.get(actor_name, {})
 
     summary_rows.append(
         {
-            "Actor Name": actor_name,
-            "Folder Name": folder_name,
-            "Current Images": len(images),
-            "Target Images": 100,
+            "Correct Actor Name": actor_name,
+            "Dataset Folder": folder_name,
+            "Current Images": image_count,
+            "Metadata Rows": tracker_row.get("metadata_rows", image_count),
+            "Target Images": tracker_row.get("target_images", 100),
+            "Status": tracker_row.get("status", "In progress"),
         }
     )
 
-st.write(f"Total actor classes: **{len(ACTOR_DISPLAY_NAMES)}**")
-st.write(f"Total local images currently collected: **{total_images}**")
-st.dataframe(summary_rows, use_container_width=True)
+
+st.subheader("Dataset Summary")
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric("Actor Classes", len(ACTOR_DISPLAY_NAMES))
+
+with col2:
+    st.metric("Current Local Images", total_images)
+
+with col3:
+    st.metric("Target Images", len(ACTOR_DISPLAY_NAMES) * 100)
+
+st.dataframe(summary_rows, width="stretch")
 
 
-st.subheader("All Actor Images With Correct Names")
+st.subheader("All 10 Actor Names With Their Actual Images")
 
 for folder_name, actor_name in ACTOR_DISPLAY_NAMES.items():
     folder_path = RAW_DIR / folder_name
@@ -81,7 +116,8 @@ for folder_name, actor_name in ACTOR_DISPLAY_NAMES.items():
 
     st.markdown("---")
     st.header(actor_name)
-    st.caption(f"Dataset folder: {folder_name}")
+    st.write(f"**Correct label:** {actor_name}")
+    st.caption(f"Dataset folder: image_recognition/dataset/raw/{folder_name}")
 
     if not images:
         st.warning(f"No images are currently saved for {actor_name}.")
@@ -93,14 +129,20 @@ for folder_name, actor_name in ACTOR_DISPLAY_NAMES.items():
         with columns[index % 4]:
             st.image(
                 str(image_path),
-                caption=f"{actor_name}\n{image_path.name}",
-                use_container_width=True,
+                caption=f"{actor_name}",
+                width="stretch",
             )
+            st.caption(f"File: {image_path.name}")
+
 
 st.markdown("---")
-st.subheader("Demo Note")
-st.write(
-    "This page proves that the dataset folders contain images and that each image is displayed under the correct actor label. "
-    "The next project step is to replace placeholder metadata, collect more verified images, annotate faces/actors with bounding boxes, "
-    "split the dataset into train/validation/test folders, and then train the image-recognition model."
+st.subheader("Checkpoint Explanation")
+st.success(
+    "This live gallery confirms that the dataset has 10 actor classes and that each saved image is displayed under the correct actor name."
+)
+
+st.info(
+    "This is not the final trained image-recognition model yet. The next steps are to replace placeholder metadata, "
+    "collect more verified public/licensed images, annotate bounding boxes, split the dataset into train/validation/test, "
+    "train the model, and evaluate it with mAP, confusion matrix, and class accuracy."
 )
